@@ -2,6 +2,7 @@
 const Role = require ('../models/Role.js');
 // 11. importamos modelo Usuario
 const Usuario = require('../models/Usuario.js');
+const Categoria = require('../models/Categoria.js');
 
 // 5. Definicion funcion validador de rol y se exporta
 const isValidRole = async(rol= '')=>{
@@ -32,10 +33,20 @@ const isValidRole = async(rol= '')=>{
     }
 }
 
+const categoriaExistsById = async( id ) => {
+
+    // Verificar si el id existe
+    const categoriaExists = await Categoria.findById(id);
+    if ( !categoriaExists ) {
+        throw new Error(`El id (categoria) no existe ${ id }`);
+    }
+}
+
 module.exports = {
     isValidRole,
     // 8. exporto validador perzonalizado emailExiste
     emailExiste,
     //15. exporto validador perzonalizado userExistsById - (findById)
-    userExistsById
+    userExistsById,
+    categoriaExistsById
 }

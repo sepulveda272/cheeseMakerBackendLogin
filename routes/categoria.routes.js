@@ -3,13 +3,12 @@ const { check } = require('express-validator');
 
 const { validateDocuments} = require('../middlewares/validate.documents.js');
 const { validateJWT } = require('../middlewares/validate.jwt.js');
-
-const { getCategoria,getCategorias,postCategoria, deleteCategoria, updateCategoria
-      } = require('../controllers/categoria.controllers.js');
-
 const { isAdminRole } = require('../middlewares/validate.role.js');
-const { categoriaExistsById } = require('../helpers/db.validators.js');
 
+const { findCategoryById } = require('../helpers/db.validators.js');
+
+const { postCategoria, getCategorias, getCategoria, putCategoria, delCategoria
+      } = require('../controllers/categoria.controllers.js');
 
 const router = Router();
 
@@ -17,33 +16,40 @@ const router = Router();
  * localhost/api/categorias
  */
 
-router.get('/:id',getCategoria)
-router.get('/',getCategorias);
-
-
-// Crear categoria - privado - cualquier persona con un token válido
+// Crear categoria - private - cualquier persona con un token válido
 router.post('/', [ 
    validateJWT, 
     check('nombre','El nombre es obligatorio').not().isEmpty(),
     validateDocuments
 ], postCategoria );
 
+//  GetAll categories - public
+router.get('/', getCategorias );
+
+// Get categoria by id - public
+router.get('/:id',[
+      check('id', 'No es un id de Mongo válido').isMongoId(),
+      check('id').custom( findCategoryById ),
+      validateDocuments,
+  ], getCategoria );
+
+// update - private - anyone with a valid token
+router.put('/:id',[
+      validateJWT,
+      check('nombre','El nombre es obligatorio').not().isEmpty(),
+      check('id').custom( findCategoryById ),
+      validateDocuments
+  ], putCategoria );
+
+
+  // Delete a category - Admin
 router.delete('/:id',[
       validateJWT,
       isAdminRole,
-      check('id', 'Mo es id valido').isMongoId(),
-      check('id').custom(categoriaExistsById,), 
-      validateDocuments
-], deleteCategoria)
-router.put('/:id', [
-      check('id', 'No es un ObjectID MongoDB válido').isMongoId(),
-      check('id').custom( categoriaExistsById ),
-      validateDocuments
-  ], updateCategoria );
-
-
-
-
+      check('id', 'No es un id de Mongo válido').isMongoId(),
+      check('id').custom( findCategoryById ),
+      validateDocuments,
+  ], delCategoria);
 
 
 module.exports = router;

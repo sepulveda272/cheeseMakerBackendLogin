@@ -3,6 +3,7 @@ const Role = require ('../models/Role.js');
 // 11. importamos modelo Usuario
 const Usuario = require('../models/Usuario.js');
 const Categoria = require('../models/Categoria.js');
+const Cheese = require('../models/Cheese.js');
 
 // 5. Definicion funcion validador de rol y se exporta
 const isValidRole = async(rol= '')=>{
@@ -33,12 +34,21 @@ const isValidRole = async(rol= '')=>{
     }
 }
 
-const categoriaExistsById = async( id ) => {
+const findCategoryById = async( id ) => {
 
-    // Verificar si el id existe
-    const categoriaExists = await Categoria.findById(id);
-    if ( !categoriaExists ) {
-        throw new Error(`El id (categoria) no existe ${ id }`);
+    // Verificar si la categoria existe
+    const findCategory = await Categoria.findById(id);
+    if ( !findCategory ) {
+        throw new Error(`El id de categoria no existe ${ id }`);
+    }
+}
+
+const findCheeseById = async( id ) => {
+
+    // Verificar si el cheese existe
+    const findCheese = await Cheese.findById(id);
+    if ( !findCheese ) {
+        throw new Error(`El id no existe ${ id }`);
     }
 }
 
@@ -48,5 +58,7 @@ module.exports = {
     emailExiste,
     //15. exporto validador perzonalizado userExistsById - (findById)
     userExistsById,
-    categoriaExistsById
+
+    findCategoryById,
+    findCheeseById
 }
